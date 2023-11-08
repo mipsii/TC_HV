@@ -1,13 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1">
-  <POU Name="MAIN" Id="{4d8a33a6-50bf-43f1-9baa-ca9df7252f1c}">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="MAIN" Id="{4d8a33a6-50bf-43f1-9baa-ca9df7252f1c}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
+	hydValve : HydraulicValve();
+	monError	:	Monitoring_Error();
+	enaNegDirB : BOOL := FALSE;
+	enaPosDirB : BOOL := FALSE;
+	commandSet : REAL := 0;
+	currentError	:	BOOL := FALSE;
+	//konfiguraParametry : REFERENCE TO configaracionParammetrs  REF=generalVariable.conParammetr;
+	OutPosDir : REAL := 0 ;	// Výstup v daném směru [mA]
+	OutNegDir : REAL := 0 ;	// Výstup v daném směru [mA]
 END_VAR
-]]>
-    </Declaration>
+
+]]></Declaration>
     <Implementation>
-      <ST><![CDATA[]]></ST>
+      <ST><![CDATA[monError(negDirB := enaNegDirB, posDirB := enaPosDirB, command := commandSet);
+IF NOT(monError.currentError) THEN
+	hydValve(bvNegDir := enaNegDirB, bvPosDir := enaPosDirB, command := commandSet); 
+	END_IF]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

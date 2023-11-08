@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="Monitoring_Error" Id="{ddbe3727-6a6b-4e90-b0ef-5962f195c134}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Monitoring_Error
+VAR_INPUT
+	negDirB	:	BOOL;
+	posDirB	:	BOOL;
+	command	:	REAL;
+END_VAR
+VAR_OUTPUT
+	currentError	:	BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[enableSolenoidControl(enaNegDir := negDirB, enaPosDir := posDirB, error := currentError);
+commandCheck(comm := command, error := currentError);
+]]></ST>
+    </Implementation>
+    <Method Name="commandCheck" Id="{e37482b3-3f45-49ac-9845-c74e88b1bb1e}">
+      <Declaration><![CDATA[METHOD PRIVATE commandCheck
+VAR_INPUT
+	comm : REAL;
+END_VAR
+VAR_IN_OUT
+	error: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF ((comm <= 100) AND (comm >0)) THEN
+		IF posDirB THEN
+			error := FALSE;
+			ELSE
+				error := TRUE;
+			END_IF
+	ELSIF ((comm >= -100) AND (comm < 0)) THEN
+			IF negDirB THEN
+				error := FALSE;
+			ELSE
+				error := TRUE;
+			END_IF
+		ELSIF comm = 0 THEN
+			IF NOT(negDirB AND posDirB) THEN
+					error := FALSE;
+				ELSE
+					error := TRUE;
+				END_IF
+			END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="enableSolenoidControl" Id="{612b163a-2352-495f-9f4e-55f73d756558}">
+      <Declaration><![CDATA[METHOD PRIVATE enableSolenoidControl
+VAR_INPUT
+	enaPosDir : BOOL;
+	enaNegDir : BOOL;	
+END_VAR
+VAR_IN_OUT
+	error: BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF (enaNegDir AND enaPosDir) THEN
+// error 
+	currentError := TRUE;
+//errCode(1);
+ELSE
+	currentError := FALSE ;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>
