@@ -22,29 +22,35 @@ VAR_INPUT
 END_VAR
 VAR_IN_OUT
 	error: BOOL;
-END_VAR
-]]></Declaration>
+END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[
-IF ((comm <= 100) AND (comm >0)) THEN
+IF ((comm <= 1000) AND (comm >0)) THEN
 		IF posDirB THEN
 			error := FALSE;
+			generalVariable.staus.bError[2].showError := FALSE;
 			ELSE
 				error := TRUE;
-			END_IF
-	ELSIF ((comm >= -100) AND (comm < 0)) THEN
+				showError(2,'příkaz a směr se neshodují');
+				END_IF;
+	ELSIF ((comm >= -1000) AND (comm < 0)) THEN
 			IF negDirB THEN
 				error := FALSE;
+				generalVariable.staus.bError[2].showError := FALSE;
 			ELSE
 				error := TRUE;
-			END_IF
-		ELSIF comm = 0 THEN
-			IF NOT(negDirB AND posDirB) THEN
+				showError(2,'příkaz a směr se neshodují');
+				END_IF;
+			ELSIF comm = 0 THEN
+				generalVariable.staus.Standstill := TRUE;
+				IF NOT(negDirB AND posDirB) THEN
 					error := FALSE;
+					generalVariable.staus.bError[3].showError := FALSE;
 				ELSE
 					error := TRUE;
-				END_IF
-			END_IF
+					showError(3,'zahrnoval některé směry');       
+				END_IF;
+			END_IF;
 ]]></ST>
       </Implementation>
     </Method>
@@ -56,17 +62,39 @@ VAR_INPUT
 END_VAR
 VAR_IN_OUT
 	error: BOOL;
+END_VAR
+VAR
+	strr	:	STRING;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[
 IF (enaNegDir AND enaPosDir) THEN
-// error 
+	// error 
 	currentError := TRUE;
-//errCode(1);
-ELSE
-	currentError := FALSE ;
-END_IF
+	showError(1,'muze být aktivní pouze jedna cívka (PosDir nebo NegDir)');
+	//errCode(1);
+	ELSE
+		currentError := FALSE ;
+		generalVariable.staus.bError[1].showError := FALSE;
+		END_IF
 ]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="showError" Id="{3873f583-cd35-46ae-a32e-68d649424b0b}">
+      <Declaration><![CDATA[METHOD PRIVATE showError
+VAR_INPUT
+	id	:	INT;
+	str	:	STRING;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[generalVariable.staus.bError[50].showError := FALSE;
+IF NOT(generalVariable.staus.bError[id].showError) THEN
+	generalVariable.staus.nErrorId[id] := id;
+	generalVariable.staus.bError[id].errorName := str;
+	generalVariable.staus.bError[id].showError := TRUE;
+	blockMessage(str);
+	END_IF;]]></ST>
       </Implementation>
     </Method>
   </POU>

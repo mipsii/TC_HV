@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="convertToHodnota" Id="{0b0224bc-4975-4099-9840-bb6086fabaa8}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION convertToHodnota : REAL
+
+VAR_INPUT
+	pCommand	:	REAL;
+	enaPosDir	:	BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF  enaPosDir THEN
+	convertToHodnota := (pCommand * (generalVariable.conParammetr.CurPosDirMax - generalVariable.conParammetr.CurPosDirMin)/1000) + generalVariable.conParammetr.CurPosDirMin;
+	ELSE
+		convertToHodnota := (pCommand * (generalVariable.conParammetr.CurNegDirMax - generalVariable.conParammetr.CurNegDirMin)/1000) + generalVariable.conParammetr.CurNegDirMin;
+		END_IF;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

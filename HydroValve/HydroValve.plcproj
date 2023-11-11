@@ -22,6 +22,9 @@
     <Compile Include="DUTs\configaracionParammetrs.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\errorsSt.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\Staus.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -30,6 +33,18 @@
       <LinkAlways>true</LinkAlways>
     </Compile>
     <Compile Include="PlcTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\acc_dec_Valve.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\blockMessage.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\convert\convertToAm.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\convert\convertToHodnota.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
@@ -48,6 +63,7 @@
   <ItemGroup>
     <Folder Include="DUTs" />
     <Folder Include="GVLs" />
+    <Folder Include="POUs\convert" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />
   </ItemGroup>

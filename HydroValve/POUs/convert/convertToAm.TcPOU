@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="convertToAm" Id="{a6c875f3-dbd7-4260-9c4b-f101c22c557f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION convertToAm : REAL
+VAR_INPUT
+	pCommand	:	REAL;
+	enaPosDir	:	BOOL;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+IF  enaPosDir THEN
+	convertToAm:= (pCommand * (generalVariable.conParammetr.CurPosDirMax - generalVariable.conParammetr.CurPosDirMin)/1000) + generalVariable.conParammetr.CurPosDirMin;
+	ELSE
+		convertToAm:= (pCommand * (generalVariable.conParammetr.CurNegDirMax - generalVariable.conParammetr.CurNegDirMin)/1000) + generalVariable.conParammetr.CurNegDirMin;
+		END_IF;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

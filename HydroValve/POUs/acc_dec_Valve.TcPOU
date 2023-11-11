@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="acc_dec_Valve" Id="{c6da75ea-c100-472a-9791-cff7a412fd9d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION acc_dec_Valve : REAL
+VAR_INPUT
+		requiredValue	:	REAL;
+		currentValue	:	REAL;
+		rampTime: TIME;
+END_VAR
+VAR
+	delta	:	real;
+	startRamp	:TIME;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[generalVariable.staus.bBussy := TRUE;
+delta := requiredValue - currentValue;
+
+IF (delta > 0) THEN
+	generalVariable.staus.Accel := TRUE;
+	generalVariable.staus.Decel := FALSE;
+	ELSE
+		generalVariable.staus.Accel := FALSE;
+		generalVariable.staus.Decel := TRUE;
+	END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

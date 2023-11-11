@@ -7,15 +7,97 @@ VAR_INPUT
 	bvNegDir	: BOOL;
 	command		: REAL;
 END_VAR
-VAR_OUTPUT
-END_VAR
 VAR
+	rampTimeACC	: TIME;
+	rampTimeDEC	: TIME;
+	previousSolenoid	:	INT;	// -1 neg, 1 pos, 0 both min
 	posDir	:	Solenoid();
 	negDir	:	Solenoid(); 
+	deltaCommand	:	REAL;
+END_VAR
+VAR_OUTPUT
+	OutPosDir : REAL := 0 ;	// Výstup v daném směru [mA]
+	OutNegDir : REAL := 0 ;	// Výstup v daném směru [mA]
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[]]></ST>
+      <ST><![CDATA[IF NOT(generalVariable.staus.bBussy) THEN
+	previousSolenoid := howIsActive();
+	IF ((command - OutPosDir-OutNegDir) <> 0) THEN
+		IF (previousSolenoid * command > 0) THEN
+			// na istom solenoidu
+			callSolenoid(posDirB := bvPosDir, desPosition := ABS(command));
+			ELSIF (previousSolenoid * command < 0) THEN
+				//postoji prelaz
+				callSolenoid(posDirB := bvPosDir, desPosition := 0);
+				ELSE
+					// error there is no allowed direction		
+					generalVariable.staus.Standstill := TRUE;			
+					END_IF;
+			END_IF;
+	END_IF;
+]]></ST>
     </Implementation>
+    <Method Name="callSolenoid" Id="{046924e7-1f03-422e-ac99-a6cc7cb22e47}">
+      <Declaration><![CDATA[METHOD PRIVATE callSolenoid
+VAR_INPUT
+	posDirB	:	BOOL;
+	desPosition	:	REAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF posDirB THEN
+	posDir(activeSolenoid := posDirB, desiredPosition := desPosition);
+	ELSE
+		negDir(activeSolenoid := posDirB, desiredPosition := desPosition);
+		END_IF;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="howIsActive" Id="{e3d729e3-05dd-414f-8828-4f1662c60e24}">
+      <Declaration><![CDATA[METHOD howIsActive :INT
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF posDir.activeSolenoid THEN
+	howIsActive := 1;
+	generalVariable.staus.OutPosDirProc := command;
+	generalVariable.staus.OutNegDirProc := 0;
+	ELSIF negDir.activeSolenoid THEN
+		howIsActive := -1;
+		generalVariable.staus.OutPosDirProc := 0;
+		generalVariable.staus.OutNegDirProc := command;
+		ELSE
+			howIsActive := 0;
+			END_IF;
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RampTimeNeg" Id="{2afb1cac-dc67-43e1-8d1a-3c7ce10f6c11}">
+      <Declaration><![CDATA[METHOD PRIVATE RampTimeNeg : REAL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF bvPosDir THEN
+	rampTimeACC:= INT_TO_TIME(REAL_TO_INT(generalVariable.conParammetr.CurNegDirMax/generalVariable.conParammetr.RampNegDirUp));
+	ELSE
+		rampTimeDEC := INT_TO_TIME(REAL_TO_INT(generalVariable.conParammetr.CurNegDirMin/generalVariable.conParammetr.RampNegDirDown));
+		END_IF;
+		]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RampTimePos" Id="{d7afd6bf-2929-4b9b-8946-24d995302043}">
+      <Declaration><![CDATA[METHOD PRIVATE RampTimePos : REAL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF bvPosDir THEN
+	rampTimeACC := INT_TO_TIME(REAL_TO_INT(generalVariable.conParammetr.CurPosDirMax/generalVariable.conParammetr.RampPosDirUp));
+	ELSE
+		rampTimeDEC := INT_TO_TIME(REAL_TO_INT(generalVariable.conParammetr.CurPosDirMin/generalVariable.conParammetr.RampPosDirDown));
+		END_IF;
+		]]></ST>
+      </Implementation>
+    </Method>
   </POU>
 </TcPlcObject>

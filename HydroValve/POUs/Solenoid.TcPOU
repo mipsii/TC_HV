@@ -3,15 +3,30 @@
   <POU Name="Solenoid" Id="{a1565ff4-83c0-4d25-afd3-9bce02147dc7}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK Solenoid
 VAR_INPUT
-
+	activeSolenoid	:	BOOL;
+	desiredPosition	:	REAL;
 END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
+	currentPosition	:	REAL;
+	requiredValue: REAL;
+	rampTime	:	TIME;
+	delta	:	REAL;
+END_VAR
+VAR_OUTPUT
+	OutPosDir : REAL := 0 ;	// Výstup v daném směru 
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[]]></ST>
+      <ST><![CDATA[//delta := requiredValue - currentPosition;
+//IF (delta > 0) THEN
+//	ELSIF (enaNegDirB
+//	rampTime := Hydra.ram;
+//	END_IF
+
+//acc_dec_Valve(requiredValue := desiredPosition, currentValue := currentPosition, rampTime := rampTime);
+]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>
