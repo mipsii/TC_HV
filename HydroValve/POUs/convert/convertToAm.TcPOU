@@ -12,9 +12,9 @@ END_VAR
     <Implementation>
       <ST><![CDATA[
 IF  enaPosDir THEN
-	convertToAm:= (pCommand * (generalVariable.conParammetr.CurPosDirMax - generalVariable.conParammetr.CurPosDirMin)/1000) + generalVariable.conParammetr.CurPosDirMin;
+	convertToAm:= (ABS(pCommand) * (generalVariable.conParammetr.CurPosDirMax - generalVariable.conParammetr.CurPosDirMin)/1000) + generalVariable.conParammetr.CurPosDirMin;
 	ELSE
-		convertToAm:= (pCommand * (generalVariable.conParammetr.CurNegDirMax - generalVariable.conParammetr.CurNegDirMin)/1000) + generalVariable.conParammetr.CurNegDirMin;
+		convertToAm:= (ABS(pCommand) * (generalVariable.conParammetr.CurNegDirMax - generalVariable.conParammetr.CurNegDirMin)/1000) + generalVariable.conParammetr.CurNegDirMin;
 		END_IF;
 ]]></ST>
     </Implementation>

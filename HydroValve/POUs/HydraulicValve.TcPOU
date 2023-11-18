@@ -8,12 +8,11 @@ VAR_INPUT
 	command		: REAL;
 END_VAR
 VAR
-	rampTimeACC	: TIME;
-	rampTimeDEC	: TIME;
-	previousSolenoid	:	INT;	// -1 neg, 1 pos, 0 both min
+	rampTimeACC	: REAL;
+	rampTimeDEC	: REAL;
+	curentSolenoid	:	SINT;	// neg -1, pos 1, nobady 0
 	posDir	:	Solenoid();
 	negDir	:	Solenoid(); 
-	deltaCommand	:	REAL;
 END_VAR
 VAR_OUTPUT
 	OutPosDir : REAL := 0 ;	// Výstup v daném směru [mA]
@@ -21,53 +20,54 @@ VAR_OUTPUT
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[IF NOT(generalVariable.staus.bBussy) THEN
-	previousSolenoid := howIsActive();
-	IF ((command - OutPosDir-OutNegDir) <> 0) THEN
-		IF (previousSolenoid * command > 0) THEN
-			// na istom solenoidu
-			callSolenoid(posDirB := bvPosDir, desPosition := ABS(command));
-			ELSIF (previousSolenoid * command < 0) THEN
-				//postoji prelaz
-				callSolenoid(posDirB := bvPosDir, desPosition := 0);
-				ELSE
-					// error there is no allowed direction		
-					generalVariable.staus.Standstill := TRUE;			
+      <ST><![CDATA[curentSolenoid := howIsActive();
+
+CASE curentSolenoid OF
+	1	:	posDir( desiredPosition := command, bPosDir := bvPosDir);
+	-1	:	negDir(desiredPosition := command, bPosDir := bvPosDir);
+	0	:	daethTime(dTime := generalVariable.conParammetr.Deadtime);
+			IF bvPosDir THEN
+				posDir( desiredPosition := command, bPosDir := bvPosDir);
+				ELSIF bvNegDir THEN
+					negDir(desiredPosition := command, bPosDir := bvPosDir);
 					END_IF;
-			END_IF;
-	END_IF;
+END_CASE
+//generalVariable.staus.OutPosDirProc := posDir.OutDir;
+OutPosDir := posDir.OutDir;
+OutNegDir := negDir.OutDir;
+
 ]]></ST>
     </Implementation>
-    <Method Name="callSolenoid" Id="{046924e7-1f03-422e-ac99-a6cc7cb22e47}">
-      <Declaration><![CDATA[METHOD PRIVATE callSolenoid
+    <Method Name="daethTime" Id="{02a42544-f112-4c58-96d0-f65887b40d4b}">
+      <Declaration><![CDATA[METHOD PRIVATE daethTime 
 VAR_INPUT
-	posDirB	:	BOOL;
-	desPosition	:	REAL;
+	dTime	:	TIME;
 END_VAR
-]]></Declaration>
+VAR
+	
+	wait_death_time	:	TON;
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF posDirB THEN
-	posDir(activeSolenoid := posDirB, desiredPosition := desPosition);
-	ELSE
-		negDir(activeSolenoid := posDirB, desiredPosition := desPosition);
-		END_IF;
-]]></ST>
+        <ST><![CDATA[dTime := generalVariable.conParammetr.Deadtime;
+acc_dec(FALSE, FALSE);
+generalVariable.staus.Standstill := TRUE;
+wait_death_time(IN:=TRUE , PT:=dTime , Q=> , ET=> );]]></ST>
       </Implementation>
     </Method>
     <Method Name="howIsActive" Id="{e3d729e3-05dd-414f-8828-4f1662c60e24}">
-      <Declaration><![CDATA[METHOD howIsActive :INT
+      <Declaration><![CDATA[METHOD howIsActive : SINT
 VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF posDir.activeSolenoid THEN
+        <ST><![CDATA[IF (posDir.OutDir > 0) THEN
 	howIsActive := 1;
-	generalVariable.staus.OutPosDirProc := command;
+	generalVariable.staus.OutPosDirProc := posDir.OutDir/10;
 	generalVariable.staus.OutNegDirProc := 0;
-	ELSIF negDir.activeSolenoid THEN
+	ELSIF (negDir.OutDir < 0) THEN
 		howIsActive := -1;
 		generalVariable.staus.OutPosDirProc := 0;
-		generalVariable.staus.OutNegDirProc := command;
+		generalVariable.staus.OutNegDirProc := negDir.OutDir/10;
 		ELSE
 			howIsActive := 0;
 			END_IF;
@@ -80,9 +80,9 @@ END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF bvPosDir THEN
-	rampTimeACC:= INT_TO_TIME(REAL_TO_INT(generalVariable.conParammetr.CurNegDirMax/generalVariable.conParammetr.RampNegDirUp));
+	rampTimeACC:= generalVariable.conParammetr.CurNegDirMax/generalVariable.conParammetr.RampNegDirUp;
 	ELSE
-		rampTimeDEC := INT_TO_TIME(REAL_TO_INT(generalVariable.conParammetr.CurNegDirMin/generalVariable.conParammetr.RampNegDirDown));
+		rampTimeDEC := generalVariable.conParammetr.CurNegDirMin/generalVariable.conParammetr.RampNegDirDown;
 		END_IF;
 		]]></ST>
       </Implementation>
@@ -92,9 +92,9 @@ END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF bvPosDir THEN
-	rampTimeACC := INT_TO_TIME(REAL_TO_INT(generalVariable.conParammetr.CurPosDirMax/generalVariable.conParammetr.RampPosDirUp));
+	rampTimeACC := (generalVariable.conParammetr.CurPosDirMax/generalVariable.conParammetr.RampPosDirUp);
 	ELSE
-		rampTimeDEC := INT_TO_TIME(REAL_TO_INT(generalVariable.conParammetr.CurPosDirMin/generalVariable.conParammetr.RampPosDirDown));
+		rampTimeDEC := (generalVariable.conParammetr.CurPosDirMin/generalVariable.conParammetr.RampPosDirDown);
 		END_IF;
 		]]></ST>
       </Implementation>

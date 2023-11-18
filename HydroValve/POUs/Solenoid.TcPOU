@@ -3,30 +3,71 @@
   <POU Name="Solenoid" Id="{a1565ff4-83c0-4d25-afd3-9bce02147dc7}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK Solenoid
 VAR_INPUT
-	activeSolenoid	:	BOOL;
 	desiredPosition	:	REAL;
-END_VAR
-VAR_OUTPUT
+	bPosDir			:	BOOL;
 END_VAR
 VAR
-	currentPosition	:	REAL;
-	requiredValue: REAL;
-	rampTime	:	TIME;
-	delta	:	REAL;
+	curPosition		:	REAL;
+	rampTime		:	StrRampTime;
+	loc_rampTime	:	TIME;
+	delta			:	REAL;
 END_VAR
 VAR_OUTPUT
-	OutPosDir : REAL := 0 ;	// Výstup v daném směru 
+	OutDir : REAL;	// Výstup v daném směru 
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[//delta := requiredValue - currentPosition;
-//IF (delta > 0) THEN
-//	ELSIF (enaNegDirB
-//	rampTime := Hydra.ram;
-//	END_IF
+      <ST><![CDATA[RampTimeMethod(desiredPosition, curPosition);
+curPosition := desiredPosition;
+IF (curPosition * desiredPosition >= 0) THEN
+			// na istom solenoidu
+			IF (ABS(desiredPosition) > ABS(curPosition)) THEN
+			    // ACC
+				IF (curPosition > 0) THEN
+					loc_rampTime := rampTime.rampTimePosMinMax;
+					ELSE
+						loc_rampTime := rampTime.rampTimeNegMinMax;
+						END_IF;
+				// DEC
+				ELSIF (curPosition > 0) THEN					
+					loc_rampTime := rampTime.rampTimePosMaxMin;
+					ELSE
+						loc_rampTime := rampTime.rampTimeNegMaxMin;
+						END_IF;
+				curPosition := acc_dec_Valve(requiredValue := desiredPosition, currentValue := curPosition, rampTime := loc_rampTime);
+			ELSE  
+				//postoji prelaz
+				blockMessage('Postoji prelaz');
+				IF (curPosition >= 0) THEN
+					curPosition := acc_dec_Valve(requiredValue := 0, currentValue := curPosition, rampTime := RampTime.rampTimePosMinMax);
+					ELSE
+						curPosition := acc_dec_Valve(requiredValue := 0, currentValue := curPosition, rampTime := RampTime.rampTimeNegMaxMin);
+						END_IF;
+					
+			END_IF;
 
-//acc_dec_Valve(requiredValue := desiredPosition, currentValue := currentPosition, rampTime := rampTime);
-]]></ST>
+OutDir := curPosition; 
+	]]></ST>
     </Implementation>
+    <Method Name="RampTimeMethod" Id="{a5883b75-edac-4fd8-a266-fde78bff1172}">
+      <Declaration><![CDATA[METHOD PRIVATE RampTimeMethod
+VAR
+	razlika	:	REAL;
+END_VAR
+VAR_INPUT
+	desiredPosition	:	REAL;
+	curPosition		:	REAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+razlika := convertToAm((desiredPosition - curPosition), bPosDir);
+rampTime.rampTimeNegMaxMin := REAL_TO_TIME(razlika / (generalVariable.conParammetr.CurNegDirMax/generalVariable.conParammetr.RampNegDirUp));
+rampTime.rampTimeNegMinMax := REAL_TO_TIME(razlika / (generalVariable.conParammetr.CurNegDirMin/generalVariable.conParammetr.RampNegDirDown));
+rampTime.rampTimePosMaxMin := REAL_TO_TIME(razlika / (generalVariable.conParammetr.CurPosDirMax/generalVariable.conParammetr.RampPosDirUp));
+rampTime.rampTimePosMinMax := REAL_TO_TIME(razlika / (generalVariable.conParammetr.CurPosDirMin/generalVariable.conParammetr.RampPosDirDown));
+]]></ST>
+      </Implementation>
+    </Method>
   </POU>
 </TcPlcObject>

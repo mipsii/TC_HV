@@ -28,11 +28,17 @@
     <Compile Include="DUTs\Staus.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\StrRampTime.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="GVLs\generalVariable.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
     </Compile>
     <Compile Include="PlcTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\acc_dec.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\acc_dec_Valve.TcPOU">

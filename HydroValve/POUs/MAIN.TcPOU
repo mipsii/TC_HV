@@ -21,7 +21,9 @@ END_VAR
 	IF NOT(monError.currentError) THEN
 		hydValve(bvNegDir := enaNegDirB, bvPosDir := enaPosDirB, command := commandSet); 
 	END_IF
-END_IF]]></ST>
+END_IF
+OutPosDir := convertToAm(generalVariable.staus.OutPosDirProc * 10, TRUE);
+OutNegDir := convertToAm(generalVariable.staus.OutNegDirProc * 10, FALSE);]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

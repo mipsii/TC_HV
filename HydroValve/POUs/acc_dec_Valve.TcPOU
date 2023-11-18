@@ -5,24 +5,31 @@
 VAR_INPUT
 		requiredValue	:	REAL;
 		currentValue	:	REAL;
-		rampTime: TIME;
+		rampTime		:	TIME;
 END_VAR
 VAR
-	delta	:	real;
-	startRamp	:TIME;
+	delta	:	REAL;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[generalVariable.staus.bBussy := TRUE;
-delta := requiredValue - currentValue;
-
+      <ST><![CDATA[
+generalVariable.staus.bBussy := TRUE;
+generalVariable.staus.bDone := FALSE;
+delta := ABS(requiredValue) - ABS(currentValue);
 IF (delta > 0) THEN
-	generalVariable.staus.Accel := TRUE;
-	generalVariable.staus.Decel := FALSE;
+	acc_dec(TRUE, FALSE);
+	currentValue := currentValue + (requiredValue -currentValue) * _TaskInfo[GETCURTASKINDEXEX()].CycleTime/TIME_TO_REAL(rampTime);
 	ELSE
-		generalVariable.staus.Accel := FALSE;
-		generalVariable.staus.Decel := TRUE;
-	END_IF]]></ST>
+		acc_dec(FALSE, TRUE);
+		acc_dec_Valve := currentValue + (requiredValue -currentValue) * _TaskInfo[GETCURTASKINDEXEX()].CycleTime/TIME_TO_REAL(rampTime);
+	END_IF;
+	
+IF (requiredValue >= currentValue) THEN
+	requiredValue := currentValue;
+	acc_dec(FALSE, FALSE);	
+	generalVariable.staus.bBussy := FALSE;
+	generalVariable.staus.bDone := TRUE;
+END_IF]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

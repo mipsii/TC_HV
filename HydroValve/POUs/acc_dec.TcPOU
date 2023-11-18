@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="acc_dec" Id="{a5b21f10-7429-450c-88b6-f83d69bc1575}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION acc_dec : bool
+VAR_INPUT
+	a	:	BOOL;
+	d	:	BOOL;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[generalVariable.staus.Accel := a;
+generalVariable.staus.Decel := d;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

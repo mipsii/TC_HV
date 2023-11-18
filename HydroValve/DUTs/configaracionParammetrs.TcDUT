@@ -11,8 +11,7 @@ STRUCT
 	RampPosDirDown :INT := 100; // Doba změny z max. na min. otevření v daném směru [ms]
 	RampNegDirUp : INT := 100; // Doba změny z min. na max. otevření v daném směru [ms]
 	RampNegDirDown : INT := 100; // Doba změny z max. na min. otevření v daném směru [ms]
-	Deadtime : INT := 5; // Kompenzace setrvačnosti při reverzaci [ms]
-
+	Deadtime : TIME := T#5MS; // Kompenzace setrvačnosti při reverzaci [ms]
 END_STRUCT
 END_TYPE
 ]]></Declaration>
