@@ -9,7 +9,8 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[IF  enaPosDir THEN
+      <ST><![CDATA[//	mA  conversion  in  0 to 1000
+IF  enaPosDir THEN
 	convertToHodnota := (pCommand * (generalVariable.conParammetr.CurPosDirMax - generalVariable.conParammetr.CurPosDirMin)/1000) + generalVariable.conParammetr.CurPosDirMin;
 	ELSE
 		convertToHodnota := (pCommand * (generalVariable.conParammetr.CurNegDirMax - generalVariable.conParammetr.CurNegDirMin)/1000) + generalVariable.conParammetr.CurNegDirMin;

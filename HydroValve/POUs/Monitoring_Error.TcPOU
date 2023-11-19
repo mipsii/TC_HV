@@ -11,7 +11,8 @@ VAR_OUTPUT
 	currentError	:	BOOL;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[enableSolenoidControl(enaNegDir := negDirB, enaPosDir := posDirB, error := currentError);
+      <ST><![CDATA[// list errors on inout 
+enableSolenoidControl(enaNegDir := negDirB, enaPosDir := posDirB, error := currentError);
 commandCheck(comm := command, error := currentError);
 ]]></ST>
     </Implementation>
@@ -24,7 +25,7 @@ VAR_IN_OUT
 	error: BOOL;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
+        <ST><![CDATA[// control command and enaeble direction
 IF ((comm <= 1000) AND (comm >0)) THEN
 		IF posDirB THEN
 			error := FALSE;
@@ -67,7 +68,7 @@ VAR
 	strr	:	STRING;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
+        <ST><![CDATA[//	control enaeble direction
 IF (enaNegDir AND enaPosDir) THEN
 	// error 
 	currentError := TRUE;
@@ -88,7 +89,8 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[generalVariable.staus.bError[50].showError := FALSE;
+        <ST><![CDATA[//	show errora
+generalVariable.staus.bError[50].showError := FALSE;
 IF NOT(generalVariable.staus.bError[id].showError) THEN
 	generalVariable.staus.nErrorId[id] := id;
 	generalVariable.staus.bError[id].errorName := str;

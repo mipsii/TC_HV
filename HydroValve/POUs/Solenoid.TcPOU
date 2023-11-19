@@ -60,7 +60,7 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
+        <ST><![CDATA[// calculate time od rams
 razlika := convertToAm((desiredPosition - curPosition), bPosDir);
 rampTime.rampTimeNegMaxMin := REAL_TO_TIME(razlika / (generalVariable.conParammetr.CurNegDirMax/generalVariable.conParammetr.RampNegDirUp));
 rampTime.rampTimeNegMinMax := REAL_TO_TIME(razlika / (generalVariable.conParammetr.CurNegDirMin/generalVariable.conParammetr.RampNegDirDown));

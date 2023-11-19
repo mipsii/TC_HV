@@ -10,7 +10,7 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
+      <ST><![CDATA[//	0 to 1000 mA conversion
 IF  enaPosDir THEN
 	convertToAm:= (ABS(pCommand) * (generalVariable.conParammetr.CurPosDirMax - generalVariable.conParammetr.CurPosDirMin)/1000) + generalVariable.conParammetr.CurPosDirMin;
 	ELSE

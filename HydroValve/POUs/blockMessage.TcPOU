@@ -10,7 +10,8 @@ VAR
 	strSFCErrorStep : STRING; (* Declaration*)
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[ADSLOGSTR(msgCtrlMask := ADSLOG_MSGTYPE_ERROR OR ADSLOG_MSGTYPE_LOG,
+      <ST><![CDATA[//	writing messages, help for me
+ADSLOGSTR(msgCtrlMask := ADSLOG_MSGTYPE_ERROR OR ADSLOG_MSGTYPE_LOG,
 	msgFmtStr := error,
 	strArg := strSFCErrorStep);]]></ST>
     </Implementation>

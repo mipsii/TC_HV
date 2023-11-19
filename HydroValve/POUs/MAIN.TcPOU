@@ -16,7 +16,8 @@ END_VAR
 
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[IF NOT(generalVariable.staus.bBussy) THEN
+      <ST><![CDATA[// control whether the valve is in operation, whether it is possible to enter a new value and  direction command
+IF NOT(generalVariable.staus.bBussy) THEN 
 	monError(negDirB := enaNegDirB, posDirB := enaPosDirB, command := commandSet);
 	IF NOT(monError.currentError) THEN
 		hydValve(bvNegDir := enaNegDirB, bvPosDir := enaPosDirB, command := commandSet); 

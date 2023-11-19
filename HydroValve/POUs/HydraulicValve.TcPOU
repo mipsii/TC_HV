@@ -20,12 +20,14 @@ VAR_OUTPUT
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[curentSolenoid := howIsActive();
-
+      <ST><![CDATA[//	function block hydraulic valve
+curentSolenoid := howIsActive();
+//	based on the current position, which solenoid is selected
 CASE curentSolenoid OF
 	1	:	posDir( desiredPosition := command, bPosDir := bvPosDir);
 	-1	:	negDir(desiredPosition := command, bPosDir := bvPosDir);
-	0	:	daethTime(dTime := generalVariable.conParammetr.Deadtime);
+	0	:	daethTime(dTime := generalVariable.conParammetr.Deadtime);	
+			// since it is at 0, the solenoid is selected, based on the desired value
 			IF bvPosDir THEN
 				posDir( desiredPosition := command, bPosDir := bvPosDir);
 				ELSIF bvNegDir THEN
@@ -48,7 +50,8 @@ VAR
 	wait_death_time	:	TON;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[dTime := generalVariable.conParammetr.Deadtime;
+        <ST><![CDATA[// death time, waits 
+dTime := generalVariable.conParammetr.Deadtime;
 acc_dec(FALSE, FALSE);
 generalVariable.staus.Standstill := TRUE;
 wait_death_time(IN:=TRUE , PT:=dTime , Q=> , ET=> );]]></ST>
@@ -60,7 +63,8 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF (posDir.OutDir > 0) THEN
+        <ST><![CDATA[//	which solenoid it is currently on
+IF (posDir.OutDir > 0) THEN
 	howIsActive := 1;
 	generalVariable.staus.OutPosDirProc := posDir.OutDir/10;
 	generalVariable.staus.OutNegDirProc := 0;
@@ -73,30 +77,6 @@ END_VAR
 			END_IF;
 
 ]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="RampTimeNeg" Id="{2afb1cac-dc67-43e1-8d1a-3c7ce10f6c11}">
-      <Declaration><![CDATA[METHOD PRIVATE RampTimeNeg : REAL
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[IF bvPosDir THEN
-	rampTimeACC:= generalVariable.conParammetr.CurNegDirMax/generalVariable.conParammetr.RampNegDirUp;
-	ELSE
-		rampTimeDEC := generalVariable.conParammetr.CurNegDirMin/generalVariable.conParammetr.RampNegDirDown;
-		END_IF;
-		]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="RampTimePos" Id="{d7afd6bf-2929-4b9b-8946-24d995302043}">
-      <Declaration><![CDATA[METHOD PRIVATE RampTimePos : REAL
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[IF bvPosDir THEN
-	rampTimeACC := (generalVariable.conParammetr.CurPosDirMax/generalVariable.conParammetr.RampPosDirUp);
-	ELSE
-		rampTimeDEC := (generalVariable.conParammetr.CurPosDirMin/generalVariable.conParammetr.RampPosDirDown);
-		END_IF;
-		]]></ST>
       </Implementation>
     </Method>
   </POU>
